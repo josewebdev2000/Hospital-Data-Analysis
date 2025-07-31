@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Financial Performance Charts</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.5/dist/chart.umd.min.js"></script>
+  <style>
+    .chart-container {
+      width: 100%;
+      max-width: 90vw;
+      margin: 0 auto;
+    }
+    canvas {
+      width: 100% !important;
+      height: 40vh !important;
+      min-height: 250px;
+      max-height: 400px;
+    }
+    @media (max-width: 640px) {
+      canvas {
+        min-height: 200px;
+        max-height: 300px;
+      }
+      .chart-container {
+        max-width: 95vw;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto p-4 space-y-8">
+    <h1 class="text-3xl font-bold text-center text-blue-800">Hospital Financial Performance Charts</h1>
+    
+    <!-- Summary Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-blue-600">Summary</h2>
+      <p class="text-gray-700">
+        This report visualizes key financial ratios for hospitals, including Debt to Equity Ratio, Days Cash on Hand, Bad Debt to Accounts Receivable Ratio, Days Sales Outstanding, Labor Compensation Ratio, and Asset Turnover. Memorial Regional Hospital’s high Days Cash on Hand (325.9 days) is notable, but its slower receivables collection may pose liquidity risks.
+      </p>
+    </div>
+
+    <!-- Chart 1: Debt to Equity Ratio -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-blue-600">Debt to Equity Ratio (Top 5 Hospitals)</h2>
+      <p class="text-gray-700 mb-4">
+        Debt to Equity Ratio measures debt relative to equity, with lower ratios indicating financial stability. This bar chart shows the top 5 hospitals with the lowest ratios.<br><br>
+        <strong>Conclusion</strong>: Cleveland Clinic Florida - Weston and Memorial hospitals show strong stability with ratios of 0.01.
+      </p>
+      <div class="chart-container"><canvas id="debtToEquityChart"></canvas></div>
+    </div>
+
+    <!-- Chart 2: Days Cash on Hand -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-blue-600">Days Cash on Hand (Top 5 Hospitals)</h2>
+      <p class="text-gray-700 mb-4">
+        Days Cash on Hand shows how long a hospital can operate without revenue, reflecting liquidity. This line chart displays the top 5 hospitals.<br><br>
+        <strong>Conclusion</strong>: Memorial Regional Hospital’s 325.9 days indicate exceptional liquidity.
+      </p>
+      <div class="chart-container"><canvas id="daysCashChart"></canvas></div>
+    </div>
+
+    <!-- Chart 4: Days Sales Outstanding vs. Asset Turnover -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-blue-600">Days Sales Outstanding vs. Asset Turnover (All Hospitals)</h2>
+      <p class="text-gray-700 mb-4">
+        Days Sales Outstanding (DSO) measures collection speed; Asset Turnover shows asset efficiency. This scatter chart plots both for all hospitals.<br><br>
+        <strong>Conclusion</strong>: HCA Florida Westside’s low DSO (3.6 days) and high Asset Turnover (2.43) indicate efficient operations.
+      </p>
+      <div class="chart-container"><canvas id="dsoVsAssetTurnoverChart"></canvas></div>
+    </div>
+
+    <!-- Chart 6: Labor Compensation Ratio -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold text-blue-600">Labor Compensation Ratio (Top 5 by Asset Turnover)</h2>
+      <p class="text-gray-700 mb-4">
+        Labor Compensation Ratio measures labor costs relative to revenue, with lower ratios indicating efficiency. This area chart shows the top 5 by Asset Turnover.<br><br>
+        <strong>Conclusion</strong>: St Anthonys’ 8.4% ratio reflects high labor cost efficiency.
+      </p>
+      <div class="chart-container"><canvas id="laborCompensationChart"></canvas></div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded hospital data as JSON
+    const hospitalData = [
+      {"Hospital Name":"Broward Health Coral Springs","Debt to Equity Ratio":0.07,"Days Cash on Hand":0,"Days Sales Outstanding":42.3,"Bad Debt to Accounts Receivable Ratio":0.386,"Labor Compensation Ratio":0.432,"Asset Turnover":0.685253},
+      {"Hospital Name":"Broward Health Imperial Point","Debt to Equity Ratio":0.24,"Days Cash on Hand":0,"Days Sales Outstanding":40.1,"Bad Debt to Accounts Receivable Ratio":0.357,"Labor Compensation Ratio":0.498,"Asset Turnover":1.12811},
+      {"Hospital Name":"Broward Health Medical Center","Debt to Equity Ratio":0.16,"Days Cash on Hand":60.1,"Days Sales Outstanding":60.1,"Bad Debt to Accounts Receivable Ratio":0.398,"Labor Compensation Ratio":0.462,"Asset Turnover":0.603911},
+      {"Hospital Name":"Broward Health North","Debt to Equity Ratio":0.08,"Days Cash on Hand":0,"Days Sales Outstanding":47.7,"Bad Debt to Accounts Receivable Ratio":0.376,"Labor Compensation Ratio":0.459,"Asset Turnover":0.993378},
+      {"Hospital Name":"Cleveland Clinic Florida - Weston","Debt to Equity Ratio":0.01,"Days Cash on Hand":55.7,"Days Sales Outstanding":55.7,"Bad Debt to Accounts Receivable Ratio":0.153,"Labor Compensation Ratio":0.283,"Asset Turnover":1.3777},
+      {"Hospital Name":"Encompass Health Rehabilitation Hospital","Debt to Equity Ratio":0,"Days Cash on Hand":67.6,"Days Sales Outstanding":53.8,"Bad Debt to Accounts Receivable Ratio":0,"Labor Compensation Ratio":0.51,"Asset Turnover":1.00866},
+      {"Hospital Name":"Fort Lauderdale Behavioral Health Center","Debt to Equity Ratio":0.67,"Days Cash on Hand":-2.7,"Days Sales Outstanding":33.9,"Bad Debt to Accounts Receivable Ratio":0,"Labor Compensation Ratio":0.061,"Asset Turnover":0.639097},
+      {"Hospital Name":"HCA Florida Northwest Hospital","Debt to Equity Ratio":-0.63,"Days Cash on Hand":0,"Days Sales Outstanding":3.7,"Bad Debt to Accounts Receivable Ratio":0.402,"Labor Compensation Ratio":0.281,"Asset Turnover":1.66223},
+      {"Hospital Name":"HCA Florida University Hospital","Debt to Equity Ratio":-37.22,"Days Cash on Hand":0,"Days Sales Outstanding":52.8,"Bad Debt to Accounts Receivable Ratio":0.103,"Labor Compensation Ratio":0.359,"Asset Turnover":0.431683},
+      {"Hospital Name":"HCA Florida Westside Hospital","Debt to Equity Ratio":-0.88,"Days Cash on Hand":0,"Days Sales Outstanding":3.6,"Bad Debt to Accounts Receivable Ratio":0.317,"Labor Compensation Ratio":0.272,"Asset Turnover":2.42841},
+      {"Hospital Name":"HCA Florida Woodmont Hospital","Debt to Equity Ratio":-0.88,"Days Cash on Hand":-0.3,"Days Sales Outstanding":0,"Bad Debt to Accounts Receivable Ratio":0.713,"Labor Compensation Ratio":0.326,"Asset Turnover":2.83326},
+      {"Hospital Name":"Holy Cross Health","Debt to Equity Ratio":1.27,"Days Cash on Hand":16.7,"Days Sales Outstanding":51.8,"Bad Debt to Accounts Receivable Ratio":0.241,"Labor Compensation Ratio":0.477,"Asset Turnover":1.33701},
+      {"Hospital Name":"Kindred Hospital South Florida Ft Lauderdale","Debt to Equity Ratio":-0.98,"Days Cash on Hand":-0.5,"Days Sales Outstanding":107.3,"Bad Debt to Accounts Receivable Ratio":0,"Labor Compensation Ratio":0.063,"Asset Turnover":2.03363},
+      {"Hospital Name":"Larkin Community Hospital Behavioral Health","Debt to Equity Ratio":0.42,"Days Cash on Hand":19.1,"Days Sales Outstanding":28.8,"Bad Debt to Accounts Receivable Ratio":0,"Labor Compensation Ratio":0.056,"Asset Turnover":0.81484},
+      {"Hospital Name":"Memorial Hospital Miramar","Debt to Equity Ratio":0.01,"Days Cash on Hand":0.6,"Days Sales Outstanding":27.7,"Bad Debt to Accounts Receivable Ratio":0.077,"Labor Compensation Ratio":0.381,"Asset Turnover":2.55485},
+      {"Hospital Name":"Memorial Hospital Pembroke","Debt to Equity Ratio":0.07,"Days Cash on Hand":1.4,"Days Sales Outstanding":30.2,"Bad Debt to Accounts Receivable Ratio":0.101,"Labor Compensation Ratio":0.474,"Asset Turnover":3.69155},
+      {"Hospital Name":"Memorial Hospital West","Debt to Equity Ratio":0.01,"Days Cash on Hand":0.4,"Days Sales Outstanding":39.1,"Bad Debt to Accounts Receivable Ratio":0.037,"Labor Compensation Ratio":0.4,"Asset Turnover":1.77093},
+      {"Hospital Name":"Memorial Regional Hospital","Debt to Equity Ratio":1.48,"Days Cash on Hand":325.9,"Days Sales Outstanding":51.4,"Bad Debt to Accounts Receivable Ratio":0.034,"Labor Compensation Ratio":1.11,"Asset Turnover":0.455503},
+      {"Hospital Name":"St Anthonys Rehabilitation Hospital","Debt to Equity Ratio":-0.27,"Days Cash on Hand":28.7,"Days Sales Outstanding":34.2,"Bad Debt to Accounts Receivable Ratio":0,"Labor Compensation Ratio":0.084,"Asset Turnover":2.44677}
+    ];
+
+    // Helper function to format numbers
+    function formatNumber(value) {
+      return value.toFixed(2);
+    }
+
+    // Chart.js global options for responsiveness
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { size: 12 } } },
+        tooltip: { bodyFont: { size: 12 }, titleFont: { size: 14 } }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 45 } },
+        y: { ticks: { font: { size: 10 } } }
+      }
+    };
+
+    // 1. Bar Chart: Debt to Equity Ratio
+    new Chart(document.getElementById('debtToEquityChart'), {
+      type: 'bar',
+      data: {
+        labels: [
+          'Cleveland Clinic Florida - Weston',
+          'Memorial Hospital Miramar',
+          'Memorial Hospital West',
+          'Broward Health Coral Springs',
+          'Memorial Hospital Pembroke'
+        ],
+        datasets: [{
+          label: 'Debt to Equity Ratio',
+          data: [0.01, 0.01, 0.01, 0.07, 0.07],
+          backgroundColor: '#3B82F6',
+          borderColor: '#1E40AF',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Debt to Equity Ratio', font: { size: 12 } },
+            ticks: { callback: value => formatNumber(value), font: { size: 10 } }
+          },
+          x: { title: { display: true, text: 'Hospital', font: { size: 12 } } }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${formatNumber(context.parsed.y)}`
+            }
+          }
+        }
+      }
+    });
+
+    // 2. Line Chart: Days Cash on Hand
+    new Chart(document.getElementById('daysCashChart'), {
+      type: 'line',
+      data: {
+        labels: [
+          'Memorial Regional Hospital',
+          'Kindred Hospital South Florida Ft Lauderdale',
+          'Encompass Health Rehabilitation Hospital',
+          'Broward Health Medical Center',
+          'Cleveland Clinic Florida - Weston'
+        ],
+        datasets: [{
+          label: 'Days Cash on Hand',
+          data: [325.9, 107.3, 67.6, 60.1, 55.7],
+          borderColor: '#10B981',
+          backgroundColor: '#10B981',
+          fill: false,
+          tension: 0.4
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Days Cash on Hand', font: { size: 12 } },
+            ticks: { callback: value => formatNumber(value), font: { size: 10 } }
+          },
+          x: { title: { display: true, text: 'Hospital', font: { size: 12 } } }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${formatNumber(context.parsed.y)} days`
+            }
+          }
+        }
+      }
+    });
+
+    // 4. Scatter Chart: Days Sales Outstanding vs. Asset Turnover
+    new Chart(document.getElementById('dsoVsAssetTurnoverChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Hospitals',
+          data: hospitalData.map(d => ({
+            x: d['Days Sales Outstanding'],
+            y: d['Asset Turnover'],
+            label: d['Hospital Name']
+          })),
+          backgroundColor: '#F59E0B',
+          borderColor: '#B45309',
+          pointRadius: 5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          x: { title: { display: true, text: 'Days Sales Outstanding', font: { size: 12 } } },
+          y: { title: { display: true, text: 'Asset Turnover', font: { size: 12 } } }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            callbacks: {
+              label: context => `${context.raw.label}: DSO = ${formatNumber(context.raw.x)}, Asset Turnover = ${formatNumber(context.raw.y)}`
+            }
+          }
+        }
+      }
+    });
+
+    // 6. Area Chart: Labor Compensation Ratio
+    new Chart(document.getElementById('laborCompensationChart'), {
+      type: 'line',
+      data: {
+        labels: [
+          'Memorial Hospital Pembroke',
+          'HCA Florida Woodmont Hospital',
+          'Memorial Hospital Miramar',
+          'HCA Florida Westside Hospital',
+          'St Anthonys Rehabilitation Hospital'
+        ],
+        datasets: [{
+          label: 'Labor Compensation Ratio',
+          data: [0.474, 0.326, 0.381, 0.272, 0.084],
+          backgroundColor: 'rgba(239, 68, 68, 0.6)',
+          borderColor: '#EF4444',
+          fill: true
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Labor Compensation Ratio', font: { size: 12 } },
+            ticks: { callback: value => `${(value * 100).toFixed(1)}%`, font: { size: 10 } }
+          },
+          x: { title: { display: true, text: 'Hospital', font: { size: 12 } } }
+        },
+        plugins: {
+          ...commonOptions.plugins,
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
